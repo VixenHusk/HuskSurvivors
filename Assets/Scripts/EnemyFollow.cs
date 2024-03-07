@@ -4,28 +4,30 @@ using UnityEngine;
 //testing
 public class EnemyFollow : MonoBehaviour
 {
-    public Transform objetivo;  // El objetivo hacia el que se moverá el GameObject
-    public float velocidadMovimiento = 5f;  // Velocidad de movimiento
+    public float velocidad = 5f;
+    private Transform jugador; // Referencia al jugador en la escena
 
-    void Update()
+    void Start()
     {
-        // Verificar si el objetivo existe y moverse hacia él
-        if (objetivo != null)
+        // Buscar al jugador en la escena por etiqueta (asegúrate de asignar la etiqueta "Jugador" al objeto del jugador)
+        jugador = GameObject.FindGameObjectWithTag("Player").transform;
+
+        if (jugador == null)
         {
-            MoverHaciaObjetivo();
+            Debug.LogError("No se encontró el objeto del jugador en la escena.");
         }
     }
 
-    void MoverHaciaObjetivo()
+    void FixedUpdate()
     {
-        // Calcular la dirección hacia el objetivo
-        Vector3 direccion = (objetivo.position - transform.position).normalized;
+        if (jugador != null)
+        {
+            Vector3 direccion = jugador.position - transform.position;
+            direccion.Normalize();
 
-        // Calcular la nueva posición
-        Vector3 nuevaPosicion = transform.position + direccion * velocidadMovimiento * Time.deltaTime;
-
-        // Mover el GameObject hacia el objetivo
-        transform.position = nuevaPosicion;
+            // Mueve al objeto enemigo hacia el jugador usando Rigidbody
+            GetComponent<Rigidbody>().MovePosition(transform.position + direccion * velocidad * Time.fixedDeltaTime);
+        }
     }
 }
 
